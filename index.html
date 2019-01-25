@@ -459,9 +459,10 @@ m				<br>
 			</p>
 		</div>
 	</div>
-	<script src="vue.js"></script>
+	<script src="vue.min.js"></script>
 	<script>
-		var app = new Vue({
+		window.onload = function(){
+			var app = new Vue({
 			el: '#app',
 			data: {
 				show: false,
@@ -671,6 +672,8 @@ m				<br>
 				}
 			}
 		})
+		}
+		
 	</script>
 </body>
 
