@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="YooooEcool">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>三蹦子2.9素材转换计算器</title>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		}
+
+		#app {
+			padding: 10px;
+			margin-bottom: 50px;
+		}
+
+		.ipt-list {
+			border-bottom: 1px solid #ddd;
+		}
+
+		.total {
+			margin-top: 10px;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.total span {
+			max-width: 30%;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			padding: 0 5px;
+			display: inline-block;
+			line-height: 15px;
+		}
+
+		.result {
+			padding: 10px 0;
+		}
+
+		.eachipt {
+			display: inline-block;
+			margin-right: 0;
+			margin-bottom: 10px;
+			clear: both;
+			width: 49%;
+		}
+
+		.eachipt label {
+			float: left;
+			display: block;
+			padding: 9px 3px;
+			width: 80px;
+			font-weight: 400;
+			line-height: 17px;
+			text-align: center;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+
+		.item-num {
+			display: block;
+			float: none;
+			left: -3px;
+			width: auto;
+			margin: 0px 0 5px 80px;
+			vertical-align: middle;
+		}
+
+		.item-num input {
+			height: 35px;
+			line-height: 1.3;
+			text-align: center;
+			width: 100%;
+			line-height: 38px\9;
+			border-width: 1px;
+			border-style: solid;
+			background-color: #fff;
+			border-radius: 3px;
+			transition: all .3s;
+			outline: 0;
+			-webkit-appearance: none;
+		}
+
+		.item-num input:focus {
+			border-color: #66ccff !important;
+			box-shadow: 0 0 3px #66ccff;
+		}
+
+		table {
+			border-collapse: collapse;
+			border-spacing: 0
+		}
+
+		.layui-table {
+			width: 100%;
+			background-color: #fff;
+			color: #666
+		}
+
+		.layui-table tr {
+			transition: all .3s;
+			-webkit-transition: all .3s
+		}
+
+		.layui-table th {
+			text-align: left;
+			font-weight: 400
+		}
+
+		.layui-table thead tr,
+		.layui-table-click,
+		.layui-table-header,
+		.layui-table-hover,
+		.layui-table-mend,
+		.layui-table-patch,
+		.layui-table-tool,
+		.layui-table-total,
+		.layui-table-total tr,
+		.layui-table[lay-even] tr:nth-child(even) {
+			background-color: #07a6a4;
+			color: #fff;
+		}
+
+		.layui-table tbody tr:hover {
+			background-color: #66ccff;
+			color: #fff;
+		}
+
+		.layui-table td,
+		.layui-table th,
+		.layui-table-col-set,
+		.layui-table-fixed-r,
+		.layui-table-grid-down,
+		.layui-table-header,
+		.layui-table-page,
+		.layui-table-tips-main,
+		.layui-table-tool,
+		.layui-table-total,
+		.layui-table-view,
+		.layui-table[lay-skin=line],
+		.layui-table[lay-skin=row] {
+			border-width: 1px;
+			border-style: solid;
+			border-color: #e6e6e6
+		}
+
+		.layui-table td,
+		.layui-table th {
+			position: relative;
+			padding: 9px 5px;
+			text-align: center;
+			min-height: 20px;
+			line-height: 20px;
+			font-size: 14px;
+		}
+
+		.fade-enter-active,
+		.fade-leave-active {
+			transition: opacity .5s;
+		}
+
+		.fade-enter,
+		.fade-leave-to {
+			opacity: 0;
+		}
+
+		.help {
+			padding: 5px;
+			display: inline-block;
+			border-radius: 5px;
+			margin: 10px 0 0 0;
+			color: #585858;
+			/* visibility: hidden; */
+			opacity: 1;
+			border: 1px solid #ddd;
+		}
+
+		.help-cont {
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			padding: 5px;
+			margin-top: 6px;
+		}
+
+		.help-cont p {
+			line-height: 24px;
+			font-size: 14px;
+			border-bottom: 1px dashed #ddd;
+			margin-top: 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<!--
+		银币: 36470
+		远古祷文：71
+		魂钢原石：49
+		崩坏能量：527
+		晶矿碎片：903
+		再生药剂：428
+		集束纤维：218
+		遗念火：13
+		石精矿：5
+		御百草：10
+
+		银币箱子 ： 1000银币=2400秘银+300星石
+		魂钢箱子：10魂钢原石 = 4200星石
+		祷文箱子：10远古祷文 = 1400星石 + 11远古意志
+		崩坏能箱子：20崩坏能量 = 1000星石+5远古意志
+		晶矿箱子：20晶矿 = 540星石+3远古意志
+		纤维箱子：20纤维 = 540星石 + 3远古意志
+		药剂箱子：20药剂 = 540星石 + 3远古意志
+
+		远古祷文 = 3晶矿 + 2纤维 + 100银币
+		魂钢原石 = 5崩坏能 + 4再生药剂 + 180银币
+
+		高级素材 = 15低级素材 + 15银币
+
+		开放世界：
+		冰卡 = 1祷文+1勾玉+7纤维 / 1祷文 + 1机芯 + 7纤维
+		罐子 = 1祷文+1勾玉+9崩坏能 / 1祷文+1机芯+9崩坏能
+		舞卡 = 1勾玉 + 1000银币 + 9纤维
+		今样 = 1勾玉 + 800银币 + 10晶矿
+		生八 = 1祷文 + 1勾玉 + 8晶矿
+		盐巴 = 1祷文 + 1100银币 + 9药剂
+		月下 = 1机芯 + 800银币 + 10晶矿
+		冰姬 = 1 机芯 + 800银币 + 10药剂
+
+
+	-->
+	<div id="app">
+		<div class="ipt-list">
+			<div class="eachipt">
+				<label>银币</label>
+				<div class="item-num">
+					<input v-model="sliver">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>远古祷文</label>
+				<div class="item-num">
+					<input v-model="rune">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>魂钢原石</label>
+				<div class="item-num">
+					<input v-model="steel">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>崩坏能量</label>
+				<div class="item-num">
+					<input v-model="soul">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>晶矿碎片</label>
+				<div class="item-num">
+					<input v-model="mine">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>集束纤维</label>
+				<div class="item-num">
+					<input v-model="fiber">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>再生药剂</label>
+				<div class="item-num">
+					<input v-model="drug">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>衫木料</label>
+				<div class="item-num">
+					<input v-model="wood">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>御百草</label>
+				<div class="item-num">
+					<input v-model="grass">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>石精矿</label>
+				<div class="item-num">
+					<input v-model="stone">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>遗念火</label>
+				<div class="item-num">
+					<input v-model="fire">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>神机之芯</label>
+				<div class="item-num">
+					<input v-model="heart">
+				</div>
+			</div>
+			<div class="eachipt">
+				<label>勾玉</label>
+				<div class="item-num">
+					<input v-model="maga">
+				</div>
+			</div>
+		</div>
+
+		<div class="total">
+			<table class="layui-table">
+				<colgroup>
+					<col>
+					<col>
+					<col>
+				</colgroup>
+				<thead>
+					<tr>
+						<th>秘银</th>
+						<th>星石</th>
+						<th>远古意志</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{mithrilNum}}</td>
+						<td>{{starNum}}</td>
+						<td>{{willNum}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<p class="help" v-on:click="show = !show">
+			补充说明
+		</p>
+		<transition name="fade">
+			<div class="help-cont" v-if="show">
+				<p style="color:red">高级素材还能产出远古意志，但不作为兑换碎片的标准，本表只计算目标碎片最终兑换数量</p>
+				<p style="color:blue">初始S碎片消耗远古意志，A级碎片消耗星石和勾玉、机芯，同期兑换对个角色碎片的，自行加减乘除，（例如本期我只兑换冰姬和炽翎，那么表内结果就可直接参考）</p>
+				<p>>转前：资源转换之前</p>
+				<p>>转后(原配方)：资源转换后，按照之前素材比例和素材数能获得的数量，对比是否划算</p>
+				<p>>转后(有芯)：指转换资源后，有神机之芯或者勾玉充足的情况</p>
+				<p>>转后(无芯)：指转换资源后，神机之芯或者勾玉需要靠兑换的情况</p>
+			</div>
+		</transition>
+
+		<div class="result">
+			<p style="line-height: 20px;font-size: 14px;color:#585858;padding:0 5px;">单位：片</p>
+			<table class="layui-table">
+				<colgroup>
+					<col width="60">
+					<col>
+					<col>
+					<col>
+				</colgroup>
+				<thead>
+					<tr>
+						<th>兑换物</th>
+						<th>转前</th>
+						<th>转后(原配方)</th>
+						<th>转后(有芯)</th>
+						<th>转后(无芯)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>S冰卡</td>
+						<td>{{tans('冰卡')}}</td>
+						<td>{{tans('冰卡',true,true)}}</td>
+						<td>{{tans('冰卡',true)}}</td>
+						<td>{{tans('冰卡',true)}}</td>
+					</tr>
+					<tr>
+						<td>S炽翎</td>
+						<td>{{tans('炽翎')}}</td>
+						<td>{{tans('炽翎',true,true)}}</td>
+						<td>{{tans('炽翎',true)}}</td>
+						<td>{{tans('炽翎',true)}}</td>
+					</tr>
+					<tr>
+						<td>S罐子</td>
+						<td>{{tans('罐子')}}</td>
+						<td>{{tans('罐子',true,true)}}</td>
+						<td>{{tans('罐子',true)}}</td>
+						<td>{{tans('罐子',true)}}</td>
+					</tr>
+					<tr>
+						<td>A生八</td>
+						<td>{{tans('生八')*3}}</td>
+						<td>{{tans('生八',true,true)*3}}</td>
+						<td>{{tans('生八',true)*3}}</td>
+						<td>{{tans('生八',true,false,true)*3}}</td>
+					</tr>
+					<tr>
+						<td>A盐巴</td>
+						<td>{{tans('盐巴')*3}}</td>
+						<td>{{tans('盐巴',true,true)*3}}</td>
+						<td>{{tans('盐巴',true)*3}}</td>
+						<td>{{tans('盐巴',true)*3}}</td>
+					</tr>
+					<tr>
+						<td>A舞卡</td>
+						<td>{{tans('舞卡')*3}}</td>
+						<td>{{tans('舞卡',true,true)*3}}</td>
+						<td>{{tans('舞卡',true)*3}}</td>
+						<td>{{tans('舞卡',true,false,true)*3}}</td>
+					</tr>
+					<tr>
+						<td>A冰姬</td>
+						<td>{{tans('冰姬')*3}}</td>
+						<td>{{tans('冰姬',true,true)*3}}</td>
+						<td>{{tans('冰姬',true)*3}}</td>
+						<td>{{tans('冰姬',true,false,true)*3}}</td>
+					</tr>
+					<tr>
+						<td>A月下</td>
+						<td>{{tans('月下')*3}}</td>
+						<td>{{tans('月下',true,true)*3}}</td>
+						<td>{{tans('月下',true)*3}}</td>
+						<td>{{tans('月下',true,false,true)*3}}</td>
+					</tr>
+					<tr>
+						<td>A今样</td>
+						<td>{{tans('今样')*3}}</td>
+						<td>{{tans('今样',true,true)*3}}</td>
+						<td>{{tans('今样',true)*3}}</td>
+						<td>{{tans('今样',true,false,true)*3}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<p style="padding:10px 0;">
+				顺便打个舰团广告：
+				<br>
+m				<br>
+				<i style="font-size: 26px;color:red;padding:0 5px;">地狱前线</i>(团号：1001013)
+				<br>
+				<br>
+				欢迎
+				<b style="font-size: 22px;color:red;padding:0 5px;">大佬</b>
+				<b style="font-size: 18px;color:green;padding:0 5px;">萌新</b>
+				<b style="font-size: 14px;color:#ddd;padding:0 5px;">咸鱼</b>
+				<b style="font-size: 30px;color:#f7a6a6;padding:0 5px;">软妹</b>加入
+				<br>
+				<br>
+				观光群：329250992（标注来自计算器）
+			</p>
+		</div>
+	</div>
+	<script src="vue.js"></script>
+	<script>
+		var app = new Vue({
+			el: '#app',
+			data: {
+				show: false,
+				sliver: '', // 银币
+				rune: '', // 祷文
+				steel: '', // 魂钢
+				soul: '', // 崩坏能
+				mine: '', // 晶矿
+				fiber: '', // 纤维
+				drug: '', // 药剂
+				wood: '', // 衫木料
+				grass: '', // 御百草
+				stone: '', // 石精矿
+				fire: '', // 遗念火
+				heart: '', // 机芯
+				maga: '', // 勾玉
+				star: 0, // 星石
+				mithril: 0, // 秘银 
+				will: 0, // 远古意志
+			},
+			methods: {
+				tans: function (name, after = false, ori = false, noheart = false) {
+					let result = 0,
+						cost, star = this.star,
+						will = this.will;
+					// 机芯/勾玉 450星石
+					switch (name) {
+						case '冰卡':
+							//1祷文+1勾玉+7纤维 / 1祷文 + 1机芯 + 7纤维
+							if (ori) {
+								let max = this.howmany(this.rune / 1, (this.heart + this.maga) / 1, this.fiber / 7);
+								cost = this.howmany((max * 1.1 + max * 7 * .15) / 9);
+							} else {
+								cost = (after) ?
+									will / 9 :
+									this.howmany(this.rune / 1, (this.heart + this.maga) / 1, this.fiber / 7);
+							}
+							break;
+						case '炽翎':
+							//2远古祷文1神机之心12再生药剂 / 14远古意志
+							if (ori) {
+								let max = this.howmany(this.rune / 2, this.heart / 1, this.drug / 12);
+								cost = this.howmany((max * 2 * 1.1 + max * 12 * .15) / 14);
+							} else {
+								cost = (after) ?
+									will / 12 :
+									this.howmany(this.rune / 2, this.heart / 1, this.drug / 12);
+							}
+							break;
+						case '罐子':
+							//1祷文+1勾玉+9崩坏能 / 1祷文+1机芯+9崩坏能 / 14远古意志
+							if (ori) {
+								let max = this.howmany(this.rune / 1, (this.heart + this.maga) / 1, this.soul / 9);
+								cost = this.howmany((max * 1.1 + max * 9 * .25) / 14);
+							} else {
+								cost = (after) ?
+									will / 14 :
+									this.howmany(this.rune / 1, (this.heart + this.maga) / 1, this.soul / 9);
+							}
+							break;
+						case '生八':
+							//1祷文 + 1勾玉 + 8晶矿
+							if (ori) {
+								let max = this.howmany(this.rune / 1, this.maga / 1, this.mine / 8);
+								cost = this.howmany((max * 140 + max * 8 * 27) / 600);
+							} else {
+								cost = (after) ?
+									((noheart) ?
+										star / (600 + 450) :
+										(star / 600 > this.maga) ? this.maga : star / 600) :
+									this.howmany(this.rune / 1, this.maga / 1, this.mine / 8);
+							}
+							break;
+						case '盐巴':
+							//1祷文 + 1100银币 + 9药剂
+							if (ori) {
+								let max = this.howmany(this.rune / 1, this.sliver / 1100, this.drug / 9);
+								cost = this.howmany((max * 140 + max * 1100 * .3 + max * 9 * 27) / 900);
+							} else {
+								cost = (after) ?
+									star / 900 :
+									this.howmany(this.rune / 1, this.sliver / 1100, this.drug / 9);
+							}
+							break;
+						case '舞卡':
+							//1勾玉 + 1000银币 + 9纤维
+							if (ori) {
+								let max = this.howmany(this.maga / 1, this.sliver / 1000, this.fiber / 9);
+								cost = this.howmany((max * 1000 * .3 + max * 9 * 27) / 600);
+							} else {
+								cost = (after) ?
+									((noheart) ?
+										star / (600 + 450) :
+										(star / 600 > this.maga) ? this.maga : star / 600) :
+									this.howmany(this.maga / 1, this.sliver / 1000, this.fiber / 9);
+							}
+							break;
+						case '冰姬':
+							//1 机芯 + 800银币 + 10药剂
+							if (ori) {
+								let max = this.howmany(this.heart / 1, this.sliver / 800, this.drug / 10);
+								cost = this.howmany((max * 800 * .3 + max * 10 * 27) / 600);
+							} else {
+								cost = (after) ?
+									((noheart) ?
+										star / (600 + 450) :
+										(star / 600 > this.heart) ? this.heart : star / 600) :
+									this.howmany(this.heart / 1, this.sliver / 800, this.drug / 10);
+							}
+							break;
+						case '月下':
+							//1机芯 + 800银币 + 10晶矿
+							if (ori) {
+								let max = this.howmany(this.heart / 1, this.sliver / 800, this.mine / 10);
+								cost = this.howmany((max * 800 * .3 + max * 10 * 27) / 600);
+							} else {
+								cost = (after) ?
+									((noheart) ?
+										star / (600 + 450) :
+										(star / 600 > this.heart) ? this.heart : star / 600) :
+									this.howmany(this.heart / 1, this.sliver / 800, this.mine / 10);
+							}
+							break;
+						case '今样':
+							//1勾玉 + 800银币 + 10晶矿
+							if (ori) {
+								let max = this.howmany(this.maga / 1, this.sliver / 800, this.mine / 10);
+								cost = this.howmany((max * 800 * .3 + max * 10 * 27) / 600);
+							} else {
+								cost = (after) ?
+									((noheart) ?
+										star / (600 + 450) :
+										(star / 600 > this.maga) ? this.maga : star / 600) :
+									this.howmany(this.maga / 1, this.sliver / 800, this.mine / 10);
+							}
+							break;
+						default:
+
+					}
+					if (cost) {
+						result = cost;
+					}
+					return Math.floor(result);
+				},
+				howmany: function (...items) {
+					let arr = items;
+					arr.sort(function (a, b) {
+						return a - b;
+					});
+					return arr[0];
+				}
+			},
+			computed: {
+				oridata: function () {
+					return {
+						sliver: parseInt(this.sliver) || 0, // 银币
+						rune: parseInt(this.rune) || 0, // 祷文
+						steel: parseInt(this.steel) || 0, // 魂钢
+						soul: parseInt(this.soul) || 0, // 崩坏能
+						mine: parseInt(this.mine) || 0, // 晶矿
+						fiber: parseInt(this.fiber) || 0, // 纤维
+						drug: parseInt(this.drug) || 0, // 药剂
+						wood: parseInt(this.wood) || 0, // 衫木料
+						grass: parseInt(this.grass) || 0, // 御百草
+						stone: parseInt(this.stone) || 0, // 石精矿
+						fire: parseInt(this.fire) || 0, // 遗念火
+						heart: parseInt(this.heart) || 0, // 机芯
+						maga: parseInt(this.maga) || 0, // 勾玉
+						will: parseInt(this.will) || 0, // 远古意志
+					}
+				},
+				mithrilNum: function () {
+					this.mithril = Math.floor(
+						this.oridata.sliver * 2.4
+					) || 0
+					return this.mithril;
+				},
+				starNum: function () {
+					this.star = Math.floor(
+						this.oridata.sliver * .3 +
+						this.oridata.rune * 140 +
+						this.oridata.steel * 420 +
+						this.oridata.soul * 50 +
+						this.oridata.mine * 27 +
+						this.oridata.fiber * 27 +
+						this.oridata.drug * 27 +
+						this.oridata.wood * 1.8 +
+						this.oridata.grass * 1.8 +
+						this.oridata.stone * 1.8 +
+						this.oridata.fire * 2.2
+					) || 0
+					return this.star;
+				},
+				willNum: function () {
+					this.will = Math.floor(
+						this.oridata.rune * 1.1 +
+						this.oridata.soul * .25 +
+						this.oridata.mine * .15 +
+						this.oridata.fiber * .15 +
+						this.oridata.drug * .15 +
+						this.oridata.wood * .01 +
+						this.oridata.grass * .01 +
+						this.oridata.stone * .01 +
+						this.oridata.fire * .02
+					) || 0
+					return this.will;
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>
